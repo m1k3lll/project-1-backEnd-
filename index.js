@@ -49,7 +49,7 @@ app.get('/getState', async (req, res) => {
 
 app.post('/resetCounter', async(req, res) => {
     try{
-        const result = await sql `UPDATE counter SET amount = 0 RETURNING amount`
+        const result = await sql `UPDATE counter SET amount = 0 RETURNING 1`
         if(result.length) {
             return res.sendStatus(200);
         }else {
