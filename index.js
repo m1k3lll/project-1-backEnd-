@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+
 const sql = require('./DB.js')
 
 const app = express();
@@ -12,19 +13,27 @@ const port = 3010;
 // };
 
 
-app.post('/decrement', (req, res) => {
+app.post('/decrement', async (req, res) => {
     try{
-        DATA.decrement++;
-        return res.sendStatus(200);
+        const result = await sql `UPDATE counter SET amount = amount + 1 WHERE counter = 'decrement' RETURNING amount`
+        if(result.length){
+            return res.sendStatus(200);
+        }else {
+            return res.sendStatus(404);
+        }
     }catch (err){
         return res.sendStatus(400);
     }
 });
 
-app.post('/increment', (req, res) => {
+app.post('/increment', async (req, res) => {
     try{
-        DATA.increment++;
-        return res.sendStatus(200);
+        const result = await sql `UPDATE counter SET amount = amount + 1 WHERE counter = 'increment' RETURNING amount`
+        if(result.length) {
+            return res.sendStatus(200);
+        }else {
+            return res.sendStatus(404);
+        }
     }catch (err){
         return res.sendStatus(400);
     }
@@ -33,7 +42,7 @@ app.post('/increment', (req, res) => {
 app.get('/getState', async (req, res) => {
     const data = await sql`SELECT * FROM counter`;
     const increment = data.find(row => row.counter === `increment`);
-    const decrement = data.find(row => row.counter === 'decrement')
+    const decrement = data.find(row => row.counter === 'decrement');
     console.log(data);
     return res.send(increment.amount - decrement.amount);
 });
