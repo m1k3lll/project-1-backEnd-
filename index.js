@@ -47,6 +47,18 @@ app.get('/getState', async (req, res) => {
     return res.send(increment.amount - decrement.amount);
 });
 
+app.post('/resetCounter', async(req, res) => {
+    try{
+        const result = await sql `UPDATE counter SET amount = 0`
+        if(result.length) {
+            return res.sendStatus(200);
+        }else {
+            return res.sendStatus(404);
+        }
+    }catch (err){
+        return res.sendStatus(400);
+    }
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
